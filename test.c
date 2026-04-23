@@ -11,20 +11,16 @@ struct Territorio {
     int tropas;
 };
 
-// pausa segura
 void pausar() {
     printf("\nPressione ENTER para continuar...");
     getchar();
 }
 
-// cadastro
 void cadastrarTerritorios(struct Territorio *mapa, int total) {
-
     printf("\n=== Cadastro de Territorios ===\n");
 
     for (int i = 0; i < total; i++) {
-
-        printf("\nTerritorio %d\n", i + 1);
+        printf("\n--- Territorio %d ---\n", i + 1);
 
         printf("Nome: ");
         fgets(mapa[i].nome, 30, stdin);
@@ -40,26 +36,20 @@ void cadastrarTerritorios(struct Territorio *mapa, int total) {
     }
 }
 
-// exibir mapa
 void exibirTerritorios(struct Territorio *mapa, int total) {
-
     printf("\n=== MAPA DO MUNDO ===\n");
 
     for (int i = 0; i < total; i++) {
-
         printf("\n--------------------------\n");
         printf("Territorio %d\n", i + 1);
         printf("Nome: %s\n", mapa[i].nome);
         printf("Exercito: %s\n", mapa[i].cor);
         printf("Tropas: %d\n", mapa[i].tropas);
     }
-
     printf("\n--------------------------\n");
 }
 
-// batalha
 void atacar(struct Territorio *atacante, struct Territorio *defensor) {
-
     int dadoAtacante = rand() % 6 + 1;
     int dadoDefensor = rand() % 6 + 1;
 
@@ -68,19 +58,16 @@ void atacar(struct Territorio *atacante, struct Territorio *defensor) {
     printf("Defensor (%s) rolou: %d\n", defensor->nome, dadoDefensor);
 
     if (dadoAtacante > dadoDefensor) {
-
         printf("\n🏆 VENCEDOR: %s\n", atacante->nome);
         printf("💀 PERDEDOR: %s\n", defensor->nome);
 
         strcpy(defensor->cor, atacante->cor);
 
         int tropasTransferidas = atacante->tropas / 2;
-
         defensor->tropas = tropasTransferidas;
         atacante->tropas -= tropasTransferidas;
 
     } else {
-
         printf("\n🏆 VENCEDOR: %s\n", defensor->nome);
         printf("💀 PERDEDOR: %s\n", atacante->nome);
 
@@ -94,17 +81,15 @@ void atacar(struct Territorio *atacante, struct Territorio *defensor) {
     printf("%s: %d tropas\n", atacante->nome, atacante->tropas);
     printf("%s: %d tropas\n", defensor->nome, defensor->tropas);
 
-    pausar(); // ⏸ pausa depois da batalha
+    pausar();
 }
 
-// main
 int main() {
-
     srand(time(NULL));
 
     int total = MAX_TERRITORIOS;
 
-    struct Territorio *mapa = (struct Territorio *) calloc(total, sizeof(struct Territorio));
+    struct Territorio *mapa = (struct Territorio *)calloc(total, sizeof(struct Territorio));
 
     if (mapa == NULL) {
         printf("Erro ao alocar memoria\n");
@@ -116,7 +101,6 @@ int main() {
     int opcao;
 
     do {
-
         printf("\n===== WAR =====\n");
         printf("1 - Mostrar mapa\n");
         printf("2 - Atacar\n");
@@ -131,45 +115,39 @@ int main() {
         getchar();
 
         switch (opcao) {
-
-        case 1:
-            exibirTerritorios(mapa, total);
-            pausar(); // ⏸ pausa depois do mapa
-            break;
-
-        case 2: {
-
-            int atk, def;
-
-            exibirTerritorios(mapa, total);
-
-            printf("\nEscolha atacante: ");
-            scanf("%d", &atk);
-
-            printf("Escolha defensor: ");
-            scanf("%d", &def);
-
-            getchar();
-
-            if (atk > 0 && atk <= total && def > 0 && def <= total && atk != def) {
-
-                atacar(&mapa[atk - 1], &mapa[def - 1]);
-
-            } else {
-                printf("\nEscolha invalida!\n");
+            case 1:
+                exibirTerritorios(mapa, total);
                 pausar();
+                break;
+
+            case 2: {
+                int atacante, defensor;  // ← AQUI: nomes alterados
+
+                exibirTerritorios(mapa, total);
+
+                printf("\nEscolha atacante (1 a %d): ", total);
+                scanf("%d", &atacante);
+
+                printf("Escolha defensor (1 a %d): ", total);
+                scanf("%d", &defensor);
+                getchar();
+
+                if (atacante > 0 && atacante <= total && defensor > 0 && defensor <= total && atacante != defensor) {
+                    atacar(&mapa[atacante - 1], &mapa[defensor - 1]);
+                } else {
+                    printf("\nEscolha invalida!\n");
+                    pausar();
+                }
+                break;
             }
 
-            break;
-        }
+            case 0:
+                printf("\nEncerrando jogo...\n");
+                break;
 
-        case 0:
-            printf("\nEncerrando jogo...\n");
-            break;
-
-        default:
-            printf("Opcao invalida\n");
-            pausar();
+            default:
+                printf("Opcao invalida\n");
+                pausar();
         }
 
     } while (opcao != 0);
